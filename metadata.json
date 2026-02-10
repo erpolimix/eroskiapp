@@ -1,0 +1,8 @@
+
+{
+  "name": "Euskara Hub - Aprende Euskera con IA",
+  "description": "Una plataforma de aprendizaje de euskera de alta fidelidad con escenarios impulsados por IA, herramientas gramaticales y seguimiento de progreso gamificado.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
