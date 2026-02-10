@@ -13,15 +13,25 @@ export interface User {
 
 export interface Scenario {
   id: string;
-  title: string;
-  subtitle: string;
-  difficulty: 'Easy' | 'Medium' | 'Hard';
-  difficultyLabel: string;
-  xp: number;
-  time: string;
   image: string;
   category: string;
-  context: string;
+}
+
+export interface VocabularyItem {
+  id: string;
+  basque: string;
+  spanish: string;
+  image: string;
+  category: string;
+}
+subtitle: string;
+difficulty: 'Easy' | 'Medium' | 'Hard';
+difficultyLabel: string;
+xp: number;
+time: string;
+image: string;
+category: string;
+context: string;
 }
 
 export interface Message {
