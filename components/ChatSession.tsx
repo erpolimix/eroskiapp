@@ -120,7 +120,7 @@ const ChatSession: React.FC<ChatSessionProps> = ({ scenario, navigate, onXpGain 
       `;
 
       const result = await ai.models.generateContent({
-        model: "gemini-2.0-flash-exp",
+        model: "gemini-2.0-flash",
         contents: [{ parts: [{ text: prompt }] }]
       });
       const text = result.candidates?.[0]?.content?.parts?.[0]?.text || "";
@@ -182,7 +182,7 @@ const ChatSession: React.FC<ChatSessionProps> = ({ scenario, navigate, onXpGain 
       const prompt = `${systemInstruction}\n\nCONVERSACIÓN PREVIA:\n${conversationHistory}\n\nUsuario: ${inputText}\n\nAitor:`;
 
       const response = await ai.models.generateContent({
-        model: "gemini-2.0-flash-exp",
+        model: "gemini-2.0-flash",
         contents: [{ parts: [{ text: prompt }] }]
       });
       
