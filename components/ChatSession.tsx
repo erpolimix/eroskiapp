@@ -98,7 +98,6 @@ const ChatSession: React.FC<ChatSessionProps> = ({ scenario, navigate, onXpGain 
     try {
       const history = messages.map(m => `${m.role}: ${m.text}`).join('\n');
       const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
-      const model = ai.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
 
       const prompt = `
         Act as a strict Basque language teacher. Evaluate this conversation between a user and an AI tutor.
@@ -120,8 +119,11 @@ const ChatSession: React.FC<ChatSessionProps> = ({ scenario, navigate, onXpGain 
         }
       `;
 
-      const result = await model.generateContent(prompt);
-      const text = result.response.text();
+      const result = await ai.models.generateContent({
+        model: "gemini-2.0-flash-exp",
+        contents: [{ parts: [{ text: prompt }] }]
+      });
+      const text = result.candidates?.[0]?.content?.parts?.[0]?.text || "";
       const jsonStr = text.replace(/```json|```/g, '').trim();
       const evalData = JSON.parse(jsonStr);
 
@@ -158,10 +160,8 @@ const ChatSession: React.FC<ChatSessionProps> = ({ scenario, navigate, onXpGain 
 
     try {
       const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
-      const chat = ai.chats.create({
-        model: 'gemini-1.5-flash-latest',
-        config: {
-          systemInstruction: `Eres Aitor, un amable tutor de euskera especializado en "Euskera de andar por casa" (festivals, potes, trabajo, ligar). 
+      
+      const systemInstruction = `Eres Aitor, un amable tutor de euskera especializado en "Euskera de andar por casa" (festivals, potes, trabajo, ligar). 
           Escenario actual: ${scenario.title}. Contexto: ${scenario.context}. 
           Tu objetivo es ayudar al usuario a practicar frases reales y cotidianas. 
           
@@ -172,12 +172,21 @@ const ChatSession: React.FC<ChatSessionProps> = ({ scenario, navigate, onXpGain 
              - "Feedback: [Si el usuario cometió un error, corrígelo. Fíjate especialmente en el ERGATIVO (NORK) y el plural del objeto]."
           3. Si el usuario escribe algo creativo pero incorrecto, no lo bloquees, corrígelo amablemente.
           4. Fomenta el uso del sistema modular de verbos (morfemas).
-          5. IMPORTANTE: La traducción debe coincidir FRASE A FRASE con el texto en euskera.`
-        }
-      });
+          5. IMPORTANTE: La traducción debe coincidir FRASE A FRASE con el texto en euskera.`;
 
-      const response = await chat.sendMessage({ message: inputText });
-      const aiText = response.text || "";
+      // Construir historial del chat para contexto
+      const conversationHistory = messages.map(m => 
+        `${m.role === 'user' ? 'Usuario' : 'Aitor'}: ${m.text}`
+      ).join('\n');
+
+      const prompt = `${systemInstruction}\n\nCONVERSACIÓN PREVIA:\n${conversationHistory}\n\nUsuario: ${inputText}\n\nAitor:`;
+
+      const response = await ai.models.generateContent({
+        model: "gemini-2.0-flash-exp",
+        contents: [{ parts: [{ text: prompt }] }]
+      });
+      
+      const aiText = response.candidates?.[0]?.content?.parts?.[0]?.text || "";
       const lines = aiText.split('\n');
       const main = lines[0];
       const trans = lines.find(l => l.toLowerCase().includes('traducción') || l.toLowerCase().includes('translation'))?.replace(/traducción:?|translation:?/i, '').trim() || "";
