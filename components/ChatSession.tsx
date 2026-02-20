@@ -98,7 +98,7 @@ const ChatSession: React.FC<ChatSessionProps> = ({ scenario, navigate, onXpGain 
     try {
       const history = messages.map(m => `${m.role}: ${m.text}`).join('\n');
       const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
-      const model = ai.getGenerativeModel({ model: "gemini-1.5-flash" });
+      const model = ai.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
 
       const prompt = `
         Act as a strict Basque language teacher. Evaluate this conversation between a user and an AI tutor.
@@ -159,7 +159,7 @@ const ChatSession: React.FC<ChatSessionProps> = ({ scenario, navigate, onXpGain 
     try {
       const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
       const chat = ai.chats.create({
-        model: 'gemini-1.5-flash',
+        model: 'gemini-1.5-flash-latest',
         config: {
           systemInstruction: `Eres Aitor, un amable tutor de euskera especializado en "Euskera de andar por casa" (festivals, potes, trabajo, ligar). 
           Escenario actual: ${scenario.title}. Contexto: ${scenario.context}. 
